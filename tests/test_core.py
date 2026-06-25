@@ -3,7 +3,7 @@
 import csv
 from pathlib import Path
 
-from budget.core import add_transaction, get_balance
+from budget.core import add_transaction, filter_by_category, get_balance
 
 
 def test_add_transaction_increases_length() -> None:
@@ -127,3 +127,82 @@ def test_get_balance_matches_step2_transactions_total() -> None:
         ]
 
     assert get_balance(transactions) == 24285027.0
+
+
+def test_filter_by_category_matches_step2_category_case_insensitively() -> None:
+    """Filtering should match real step2 categories without case sensitivity."""
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        },
+        {
+            "date": "2026-02-01",
+            "type": "지출",
+            "category": "여행",
+            "description": "여행 경비",
+            "amount": -651009,
+            "memo": "카드결제",
+        },
+        {
+            "date": "2026-02-01",
+            "type": "수입",
+            "category": "급여",
+            "description": "월급",
+            "amount": 4358625,
+            "memo": "",
+        },
+    ]
+
+    filtered = filter_by_category(transactions, "여행")
+
+    assert len(filtered) == 2
+    assert all(transaction["category"] == "여행" for transaction in filtered)
+
+
+def test_filter_by_category_returns_empty_list_for_missing_category() -> None:
+    """Unknown categories should return an empty list."""
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        }
+    ]
+
+    assert filter_by_category(transactions, "미존재카테고리") == []
+
+
+def test_filter_by_category_returns_independent_list() -> None:
+    """The filtered result should not mutate the original list."""
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        },
+        {
+            "date": "2026-02-01",
+            "type": "지출",
+            "category": "여행",
+            "description": "여행 경비",
+            "amount": -651009,
+            "memo": "카드결제",
+        },
+    ]
+
+    filtered = filter_by_category(transactions, "여행")
+    filtered.pop()
+
+    assert len(transactions) == 2
+    assert len(filtered) == 1

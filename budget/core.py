@@ -39,7 +39,12 @@ def get_balance(transactions: List[Transaction]) -> float:
 
 def filter_by_category(transactions: List[Transaction], category: str) -> List[Transaction]:
     """Return transactions matching the given category."""
-    pass
+    normalized_category = category.casefold()
+    return [
+        transaction
+        for transaction in transactions
+        if str(transaction["category"]).casefold() == normalized_category
+    ]
 
 
 def monthly_summary(transactions: List[Transaction]) -> Dict[str, Dict[str, float]]:
