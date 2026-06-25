@@ -3,7 +3,7 @@
 import csv
 from pathlib import Path
 
-from budget.core import add_transaction, filter_by_category, get_balance
+from budget.core import add_transaction, filter_by_category, get_balance, load_transactions_from_csv
 
 
 def test_add_transaction_increases_length() -> None:
@@ -206,3 +206,16 @@ def test_filter_by_category_returns_independent_list() -> None:
 
     assert len(transactions) == 2
     assert len(filtered) == 1
+
+
+def test_load_transactions_from_csv_reads_step1_sample() -> None:
+    """CSV loading should match the step1 sample format."""
+    transactions = load_transactions_from_csv("data/step1_transactions.csv")
+
+    assert len(transactions) == 10
+    assert transactions[0]["date"] == "2026-01-05"
+    assert transactions[0]["type"] == "지출"
+    assert transactions[0]["amount"] == -12000
+    assert isinstance(transactions[0]["amount"], int)
+    assert transactions[-1]["category"] == "기타수입"
+    assert transactions[-1]["amount"] == 25000

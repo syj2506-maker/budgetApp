@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 from typing import Any, Dict, List
 
 
@@ -26,7 +27,19 @@ def add_transaction(transactions: List[Transaction], transaction: Transaction) -
 
 def load_transactions_from_csv(csv_path: str) -> List[Transaction]:
     """Load transactions from a CSV file and return them as a list."""
-    pass
+    with open(csv_path, "r", encoding="utf-8-sig", newline="") as csv_file:
+        reader = csv.DictReader(csv_file)
+        return [
+            {
+                "date": row["date"],
+                "type": row["type"],
+                "category": row["category"],
+                "description": row["description"],
+                "amount": int(row["amount"]),
+                "memo": row["memo"],
+            }
+            for row in reader
+        ]
 
 
 def get_balance(transactions: List[Transaction]) -> float:
