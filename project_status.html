@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>budgetApp 프로젝트 현황</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --accent-2: #38bdf8;
+      --border: rgba(148, 163, 184, 0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.16), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px 56px;
+    }
+    .hero, .card {
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(10px);
+    }
+    .hero {
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      color: var(--accent-2);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.05;
+    }
+    .subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .card {
+      padding: 20px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-12 { grid-column: span 12; }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--accent-2);
+    }
+    ul { margin: 0; padding-left: 20px; }
+    li + li { margin-top: 6px; }
+    .meta {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 14px;
+    }
+    .pill {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+    .pill strong {
+      display: block;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .pill span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: rgba(31, 41, 55, 0.9);
+      color: #fff;
+      font-weight: 700;
+    }
+    tr:last-child td { border-bottom: 0; }
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(148, 163, 184, 0.12);
+      color: #dbeafe;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    @media (max-width: 900px) {
+      .span-4, .span-6 { grid-column: span 12; }
+      .hero { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">budgetApp</div>
+      <h1>Python CSV 기반 가계부 CLI 앱 현황</h1>
+      <p class="subtitle">
+        지금까지 구현된 핵심 로직, 테스트 범위, 데이터 검증 결과를 한 페이지에 정리한 상태 리포트입니다.
+        현재는 CLI UI보다 핵심 데이터 처리 계층을 먼저 TDD로 완성해가는 단계입니다.
+      </p>
+      <div class="meta">
+        <div class="pill">
+          <strong>현재 브랜치</strong>
+          <span><code>main</code>, 최신 커밋 <code>f41cdbf</code></span>
+        </div>
+        <div class="pill">
+          <strong>핵심 검증</strong>
+          <span><code>pytest tests/test_core.py -q</code> 기준 14개 테스트 통과</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card span-6">
+        <h2>구현된 기능</h2>
+        <ul>
+          <li><code>add_transaction</code>: 거래를 복사해서 새 거래를 추가</li>
+          <li><code>get_balance</code>: 수입과 지출의 <code>amount</code> 합산</li>
+          <li><code>filter_by_category</code>: 카테고리 대소문자 무시 필터링</li>
+          <li><code>load_transactions_from_csv</code>: <code>utf-8-sig</code> CSV 로드 및 <code>amount</code> 정수 변환</li>
+          <li><code>monthly_summary</code>: 월별 수입, 지출, 순이익 집계</li>
+        </ul>
+      </article>
+
+      <article class="card span-6">
+        <h2>테스트 현황</h2>
+        <ul>
+          <li><code>step1_transactions.csv</code> 기반 CSV 로드 테스트</li>
+          <li><code>step2_transactions.csv</code> 기반 잔액 및 카테고리 필터 테스트</li>
+          <li><code>step3_transactions.csv</code> 기반 월별 요약 테스트</li>
+          <li>빈 리스트, 미존재 카테고리, 원본 리스트 독립성 검증</li>
+        </ul>
+        <p class="note">모든 핵심 기능은 테스트를 먼저 추가한 뒤 구현하는 TDD 흐름으로 진행했습니다.</p>
+      </article>
+
+      <article class="card span-12">
+        <h2>월별 요약 예시</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>월</th>
+              <th>수입</th>
+              <th>지출</th>
+              <th>순이익</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025-01</td>
+              <td>405,037</td>
+              <td>-2,886,860</td>
+              <td>-2,481,823</td>
+            </tr>
+            <tr>
+              <td>2025-12</td>
+              <td>6,867,295</td>
+              <td>-3,540,137</td>
+              <td>3,327,158</td>
+            </tr>
+            <tr>
+              <td>2026-03</td>
+              <td>489,857</td>
+              <td>-3,301,374</td>
+              <td>-2,811,517</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">
+          이 값들은 <code>data/step3_transactions.csv</code>를 읽어서 계산한 검증 기준입니다.
+        </p>
+      </article>
+
+      <article class="card span-4">
+        <h3>프로젝트 규칙</h3>
+        <ul>
+          <li>모든 함수에 타입 힌트 필수</li>
+          <li>함수 하나 최대 50줄</li>
+          <li>순환복잡도 10 이하</li>
+          <li>구현 전 테스트 먼저</li>
+          <li>커밋 전 QA 검수</li>
+        </ul>
+      </article>
+
+      <article class="card span-4">
+        <h3>사용 도구</h3>
+        <ul>
+          <li><code>pytest</code></li>
+          <li><code>pytest-cov</code></li>
+          <li><code>radon</code></li>
+          <li><code>xenon</code></li>
+          <li><code>flake8</code></li>
+        </ul>
+      </article>
+
+      <article class="card span-4">
+        <h3>다음 단계</h3>
+        <ul>
+          <li>CLI 진입점 추가</li>
+          <li>사용자 메뉴 흐름 구현</li>
+          <li>정적 분석/CI 설정</li>
+          <li>대용량 CSV 대응 검증</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
