@@ -62,4 +62,19 @@ def filter_by_category(transactions: List[Transaction], category: str) -> List[T
 
 def monthly_summary(transactions: List[Transaction]) -> Dict[str, Dict[str, float]]:
     """Return monthly income, expense, and net summary."""
-    pass
+    summary: Dict[str, Dict[str, float]] = {}
+
+    for transaction in transactions:
+        month = str(transaction["date"])[:7]
+        amount = transaction["amount"]
+        month_summary = summary.setdefault(
+            month,
+            {"income": 0, "expense": 0, "net": 0},
+        )
+        if amount >= 0:
+            month_summary["income"] += amount
+        else:
+            month_summary["expense"] += amount
+        month_summary["net"] += amount
+
+    return summary

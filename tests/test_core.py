@@ -3,7 +3,13 @@
 import csv
 from pathlib import Path
 
-from budget.core import add_transaction, filter_by_category, get_balance, load_transactions_from_csv
+from budget.core import (
+    add_transaction,
+    filter_by_category,
+    get_balance,
+    load_transactions_from_csv,
+    monthly_summary,
+)
 
 
 def test_add_transaction_increases_length() -> None:
@@ -219,3 +225,56 @@ def test_load_transactions_from_csv_reads_step1_sample() -> None:
     assert isinstance(transactions[0]["amount"], int)
     assert transactions[-1]["category"] == "기타수입"
     assert transactions[-1]["amount"] == 25000
+
+
+def test_monthly_summary_returns_empty_dict_for_empty_list() -> None:
+    """Empty transaction lists should produce an empty monthly summary."""
+    assert monthly_summary([]) == {}
+
+
+def test_monthly_summary_groups_amounts_by_month() -> None:
+    """Monthly summary should aggregate income, expense, and net by YYYY-MM."""
+    transactions = [
+        {
+            "date": "2026-01-05",
+            "type": "지출",
+            "category": "식비",
+            "description": "점심식사",
+            "amount": -12000,
+            "memo": "",
+        },
+        {
+            "date": "2026-01-07",
+            "type": "수입",
+            "category": "급여",
+            "description": "월급",
+            "amount": 3500000,
+            "memo": "1월급여",
+        },
+        {
+            "date": "2026-02-01",
+            "type": "수입",
+            "category": "기타수입",
+            "description": "중고 판매",
+            "amount": 25000,
+            "memo": "중고마켓",
+        },
+    ]
+
+    summary = monthly_summary(transactions)
+
+    assert summary == {
+        "2026-01": {"income": 3500000, "expense": -12000, "net": 3488000},
+        "2026-02": {"income": 25000, "expense": 0, "net": 25000},
+    }
+
+
+def test_monthly_summary_matches_step3_sample_months() -> None:
+    """The step3 sample should produce known monthly totals."""
+    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+
+    summary = monthly_summary(transactions)
+
+    assert summary["2025-01"] == {"income": 405037, "expense": -2886860, "net": -2481823}
+    assert summary["2025-12"] == {"income": 6867295, "expense": -3540137, "net": 3327158}
+    assert summary["2026-03"] == {"income": 489857, "expense": -3301374, "net": -2811517}
