@@ -31,7 +31,10 @@ def load_transactions_from_csv(csv_path: str) -> List[Transaction]:
 
 def get_balance(transactions: List[Transaction]) -> float:
     """Return the balance computed from the transaction list."""
-    pass
+    if not transactions:
+        return 0.0
+
+    return float(sum(transaction["amount"] for transaction in transactions))
 
 
 def filter_by_category(transactions: List[Transaction], category: str) -> List[Transaction]:

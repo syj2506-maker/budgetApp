@@ -1,6 +1,9 @@
 """Tests for budget.core."""
 
-from budget.core import add_transaction
+import csv
+from pathlib import Path
+
+from budget.core import add_transaction, get_balance
 
 
 def test_add_transaction_increases_length() -> None:
@@ -75,3 +78,52 @@ def test_add_transaction_handles_empty_description() -> None:
     assert updated_transactions[0]["description"] == ""
     assert updated_transactions[0]["amount"] == 25000
     assert updated_transactions[0]["memo"] == "중고마켓"
+
+
+def test_get_balance_returns_zero_for_empty_list() -> None:
+    """Empty transaction lists should produce a zero balance."""
+    assert get_balance([]) == 0.0
+
+
+def test_get_balance_sums_income_and_expense_amounts() -> None:
+    """Balance should be the sum of positive and negative amounts."""
+    transactions = [
+        {
+            "date": "2026-01-01",
+            "type": "수입",
+            "category": "급여",
+            "description": "월급",
+            "amount": 3500000,
+            "memo": "",
+        },
+        {
+            "date": "2026-01-02",
+            "type": "지출",
+            "category": "식비",
+            "description": "점심",
+            "amount": -12000,
+            "memo": "",
+        },
+    ]
+
+    assert get_balance(transactions) == 3488000.0
+
+
+def test_get_balance_matches_step2_transactions_total() -> None:
+    """The step2 sample should sum to the known total balance."""
+    csv_path = Path("data/step2_transactions.csv")
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as csv_file:
+        reader = csv.DictReader(csv_file)
+        transactions = [
+            {
+                "date": row["date"],
+                "type": row["type"],
+                "category": row["category"],
+                "description": row["description"],
+                "amount": int(row["amount"]),
+                "memo": row["memo"],
+            }
+            for row in reader
+        ]
+
+    assert get_balance(transactions) == 24285027.0
